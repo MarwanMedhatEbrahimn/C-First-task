@@ -1,10 +1,19 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
+struct Users{
+    char username[20];
+    char password[20];
+    bool active;
+};
+void login(struct Users user);
+void isExist(struct Users* users,char* username,char* password,int cntOfUsers);
+bool _register(struct Users* users,char* username,int cntOfUsers);
 int main() {
-    char username[20], password[20];
-    char usernamesInDatabase[20][20], passwordsInDatabase[20][20];
-    int UsersInDatabase = 0;
+    char username[50], password[50];
+    struct Users users[20];
+    int cntOfUsers = 0;
     int operation_number = 0;
     while (1) {
         printf("Choose operation\n");
@@ -14,44 +23,28 @@ int main() {
         scanf("%d", &operation_number);
 
         if (operation_number == 1) {
-            printf("Enter a Email: ");
+            printf("Enter your Email: ");
             scanf("%s", username);
-            printf("Enter a password: ");
+            printf("Enter your password: ");
             scanf("%s", password);
-            int i = 0;
-            int flag = 0;
-            while(i < UsersInDatabase){
-                if(strcmp(username,usernamesInDatabase[i])==0&&strcmp(password,passwordsInDatabase[i])==0){
-                    flag = 1;
-                    break;
-                }
-                i++;
-            }
-            if(flag == 1){
-                printf("Login successful!\n");
-            }
-            else{
-                printf("Incorrect Email or Password.\n");
-            }
+            isExist(users,username,password,cntOfUsers);
         }
         else if (operation_number == 2) {
+            int active;
             printf("Enter your username: ");
-            scanf("%s", usernamesInDatabase[UsersInDatabase]);
+            scanf("%s", users[cntOfUsers].username);
             printf("Enter your password: ");
-            scanf("%s", passwordsInDatabase[UsersInDatabase]);
-            int flag = 1,i=0;
-            while(i<UsersInDatabase){
-                if(strcmp(usernamesInDatabase[UsersInDatabase],usernamesInDatabase[i])==0) {
-                    flag = 0;
-                }
-                i++;
-            }
+            scanf("%s", users[cntOfUsers].password);
+            printf("Enter Is this Active => 1 or not => 0: ");
+            scanf("%d", &active);
+            users[cntOfUsers].active = (active == 0) ? false : true;
+            bool flag = _register(users,username,cntOfUsers);
             if(flag == 1){
-                UsersInDatabase++;
+                cntOfUsers++;
                 printf("Register successful.\n");
             }
             else{
-                printf("This email already exists!\n");
+                printf("This email already exists\n");
             }
         }
         else if (operation_number == 3) {
@@ -64,4 +57,52 @@ int main() {
     }
 
     return 0;
+}
+void login(struct Users user){
+    int operation;
+    if(!user.active){
+        printf("This account not active\n");
+        return;
+    }
+    printf("Login successful\n");
+    printf("Welcome %s \n",user.username);
+    while (1){
+        printf("What is action you went to do\n");
+        printf("1: logout\n");
+        scanf("%d", &operation);
+        if(operation == 1){
+            return;
+        }
+        else{
+            printf("Invalid input. Please try again.\n");
+        }
+    }
+}
+void isExist(struct Users users[20],char username[50],char password[50],int cntOfUsers){
+    int i = 0;
+    int flag = 0;
+    while(i < cntOfUsers){
+        if(strcmp(username, users[i].username) == 0 && strcmp(password, users[i].password) == 0){
+            flag = 1;
+            break;
+        }
+        i++;
+    }
+    if(flag == 1){
+        login(users[i]);
+    }
+    else{
+        printf("Incorrect Email or Password.\n");
+    }
+    return;
+}
+bool _register(struct Users* users,char* username,int cntOfUsers){
+    int i=0;
+    while(i < cntOfUsers){
+        if(strcmp(users[cntOfUsers].username, users[i].username) == 0) {
+            return false;
+        }
+        i++;
+    }
+    return true;
 }
